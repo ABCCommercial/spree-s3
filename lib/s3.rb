@@ -1,6 +1,6 @@
 module S3
   class << self
-    attr_accessor :key, :secret, :bucket
+    attr_accessor :key, :secret, :bucket, :host
 
     def key
       @key || ENV['S3_KEY']
@@ -12,6 +12,10 @@ module S3
 
     def bucket
       @bucket || ENV['S3_BUCKET']
+    end
+
+    def host
+      @host || ENV['S3_HOST']
     end
 
     def enabled?
@@ -28,9 +32,10 @@ module S3
     end
 
     def load_s3_config(hash)
-      self.key = hash[:key]
+      self.key    = hash[:key]
       self.secret = hash[:secret]
       self.bucket = hash[:bucket]
+      self.host   = hash[:host]
     end
   end
 

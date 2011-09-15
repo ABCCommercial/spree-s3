@@ -1,5 +1,6 @@
 require 'spree_core'
 require 'spree_s3_hooks'
+require 'aws/s3'
 
 module SpreeS3
   class Engine < Rails::Engine
@@ -8,6 +9,8 @@ module SpreeS3
 
     def self.activate
       S3.load_s3_yaml
+
+      AWS::S3::DEFAULT_HOST.replace(S3.host) unless S3.host.blank?
 
       Image.class_eval do
         extend S3::Attachment
