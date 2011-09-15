@@ -15,7 +15,7 @@ module S3
     end
 
     def host
-      @host || ENV['S3_HOST']
+      @host || ENV['S3_HOST'] || 's3.amazonaws.com'
     end
 
     def enabled?
@@ -50,10 +50,11 @@ module S3
   private
     def configure_definition_for_s3(definition)
       definition.delete :url
-      definition[:path] = definition[:path].gsub(':rails_root/public/', '')
-      definition[:storage] = 's3'
-      definition[:bucket] = S3.bucket
+      definition[:path]           = definition[:path].gsub(':rails_root/public/', '')
+      definition[:storage]        = 's3'
+      definition[:bucket]         = S3.bucket
       definition[:s3_credentials] = {:access_key_id => S3.key, :secret_access_key => S3.secret}
+      definition[:url]            = ":s3_url"
     end
   end
 end

@@ -12,6 +12,10 @@ module SpreeS3
 
       AWS::S3::DEFAULT_HOST.replace(S3.host) unless S3.host.blank?
 
+      Paperclip.interpolates(:s3_url) { |attachment, style|
+        "#{attachment.s3_protocol}://#{S3.host}/#{attachment.bucket_name}/#{attachment.path(style).gsub(%r{^/}, "")}"
+      }
+
       Image.class_eval do
         extend S3::Attachment
         sends_files_to_s3 if S3.enabled?
