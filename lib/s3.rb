@@ -1,6 +1,6 @@
 module S3
   class << self
-    attr_accessor :key, :secret, :bucket
+    attr_accessor :key, :secret, :bucket, :s3_host_alias
 
     def key
       @key || ENV['S3_KEY']
@@ -12,6 +12,10 @@ module S3
 
     def bucket
       @bucket || ENV['S3_BUCKET']
+    end
+
+    def s3_host_alias
+      @s3_host_alias || ENV['S3_HOST_ALIAS']
     end
 
     def enabled?
@@ -31,6 +35,7 @@ module S3
       self.key = hash[:key]
       self.secret = hash[:secret]
       self.bucket = hash[:bucket]
+      self.s3_host_alias = hash[:s3_host_alias]
     end
   end
 
@@ -44,7 +49,12 @@ module S3
 
   private
     def configure_definition_for_s3(definition)
-      definition.delete :url
+      if S3.s3_host_alias.to_s == ''
+        definition.delete :url
+      else
+        definition[:url] = ':s3_alias_url'
+        definition[:s3_host_alias] = S3.s3_host_alias
+      end
       definition[:path] = definition[:path].gsub(':rails_root/public/', '')
       definition[:storage] = 's3'
       definition[:bucket] = S3.bucket
