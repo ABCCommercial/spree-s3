@@ -1,6 +1,6 @@
 module S3
   class << self
-    attr_accessor :key, :secret, :bucket, :s3_host_alias
+    attr_accessor :key, :secret, :bucket, :s3_host_alias, :s3_protocol
 
     def key
       @key || ENV['S3_KEY']
@@ -18,6 +18,10 @@ module S3
       @s3_host_alias || ENV['S3_HOST_ALIAS']
     end
 
+    def s3_protocol
+      @s3_protocol || ENV['S3_PROTOCOL']
+    end
+
     def enabled?
       true unless key.blank? or secret.blank? or bucket.blank?
     end
@@ -32,10 +36,19 @@ module S3
     end
 
     def load_s3_config(hash)
-      self.key = hash[:key]
-      self.secret = hash[:secret]
-      self.bucket = hash[:bucket]
-      self.s3_host_alias = hash[:s3_host_alias]
+      self.key = hash[:key].gsub(/\s/, '')
+      self.secret = hash[:secret].gsub(/\s/, '')
+      self.bucket = hash[:bucket].gsub(/\s/, '')
+      if hash[:s3_host_alias]
+        self.s3_host_alias = hash[:s3_host_alias].gsub(/\s/, '')
+      else
+        self.s3_host_alias = nil
+      end
+      if hash[:s3_protocol]
+        self.s3_protocol = hash[:s3_protocol].gsub(/\s/, '')
+      else
+       self.s3_protocol = 'http'
+      end
     end
   end
 
@@ -49,15 +62,16 @@ module S3
 
   private
     def configure_definition_for_s3(definition)
-      if S3.s3_host_alias.to_s == ''
-        definition.delete :url
-      else
+      if S3.s3_host_alias
         definition[:url] = ':s3_alias_url'
         definition[:s3_host_alias] = S3.s3_host_alias
+      else
+        definition.delete :url
       end
       definition[:path] = definition[:path].gsub(':rails_root/public/', '')
       definition[:storage] = 's3'
       definition[:bucket] = S3.bucket
+      definition[:s3_protocol] = S3.s3_protocol
       definition[:s3_credentials] = {:access_key_id => S3.key, :secret_access_key => S3.secret}
     end
   end
