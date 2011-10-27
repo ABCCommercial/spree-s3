@@ -39,16 +39,8 @@ module S3
       self.key = hash[:key].gsub(/\s/, '')
       self.secret = hash[:secret].gsub(/\s/, '')
       self.bucket = hash[:bucket].gsub(/\s/, '')
-      if hash[:s3_host_alias]
-        self.s3_host_alias = hash[:s3_host_alias].gsub(/\s/, '')
-      else
-        self.s3_host_alias = nil
-      end
-      if hash[:s3_protocol]
-        self.s3_protocol = hash[:s3_protocol].gsub(/\s/, '')
-      else
-       self.s3_protocol = 'http'
-      end
+      self.s3_host_alias = hash[:s3_host_alias].gsub(/\s/, '') if hash[:s3_host_alias]
+      self.s3_protocol = hash[:s3_protocol].gsub(/\s/, '') if hash[:s3_protocol]
     end
   end
 
