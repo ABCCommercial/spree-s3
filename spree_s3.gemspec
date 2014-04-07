@@ -20,4 +20,5 @@ Gem::Specification.new do |s|
   s.add_dependency('spree_core', '>= 0.30.1')
   s.add_dependency('paperclip', '>=2.3.6')
   s.add_dependency('aws-s3', '>= 0.6.2')
+  s.add_dependency('rails',  '3.1.12')
 end
